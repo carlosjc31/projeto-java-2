@@ -6,19 +6,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agenda.agenda_backend.modelos.Agenda;
 
+import jakarta.annotation.PostConstruct;
+
 @RestController
 public class AgendaController {
 
-    @GetMapping("agendas")
-    public List<Agenda> getAgendas() throws ParseException {
+    private List<Agenda> agendas = new ArrayList<>();
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-        List<Agenda> agendas = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    @PostConstruct
+    public void init() throws ParseException {
 
         Agenda ag1 = new Agenda();
         ag1.setId(1);
@@ -44,10 +48,31 @@ public class AgendaController {
         agendas.add(ag1);
         agendas.add(ag2);
         agendas.add(ag3);
-        
+
+    }
+
+    @GetMapping("agendas/{id}")
+    public ResponseEntity<Agenda> getAgendas(@PathVariable int id) throws ParseException{
+
+        if (id <= agendas.size()) {
+            return ResponseEntity.ok().body(agendas.get(id - 1)); //agendas.get(id - 1);
+        }
+        else{
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
+    @GetMapping("agendas")
+    public List<Agenda> getAgendas() throws ParseException {
+
         return agendas;
 
     }
- 
 
 }
+
+        
+ 
+
+
